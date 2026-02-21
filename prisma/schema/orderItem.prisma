@@ -1,0 +1,15 @@
+model OrderItem {
+    id        String @id @default(uuid())
+    quantity  Int
+    mealName  String
+    mealPrice Float
+
+    orderId String
+    mealId  String
+
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    meal  Meal  @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+    @@index([id])
+    @@map("order-item")
+}

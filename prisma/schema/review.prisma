@@ -1,0 +1,18 @@
+model Review {
+    id      String  @id @default(uuid())
+    rating  Int
+    comment String?
+
+    orderId    String @unique
+    mealId     String
+    customerId String
+
+    order    Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    meal     Meal  @relation(fields: [mealId], references: [id], onDelete: Cascade)
+    customer User  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+
+    @@index([id])
+    @@map("review")
+}
