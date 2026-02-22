@@ -24,3 +24,25 @@ export const UserStatus = {
 } as const
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
+
+
+export const DietaryType = {
+  VEGAN: 'VEGAN',
+  VEGETARIAN: 'VEGETARIAN',
+  GLUTEN_FREE: 'GLUTEN_FREE',
+  HALAL: 'HALAL',
+  NONE: 'NONE'
+} as const
+
+export type DietaryType = (typeof DietaryType)[keyof typeof DietaryType]
+
+
+export const OrderStatus = {
+  PLACED: 'PLACED',
+  PREPARING: 'PREPARING',
+  READY: 'READY',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
