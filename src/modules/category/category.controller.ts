@@ -1,9 +1,19 @@
 import { Request, Response } from "express";
 import { categoryService } from "./category.service";
+import { AppError } from "../../errors/AppError";
+import { UserRole } from "../../generated/prisma/enums";
 
 const createCategory = async (req: Request, res: Response) => {
   try {
     
+    if(!req.user){
+        throw new AppError(401,"Unauthorized access")
+    }
+
+    if(req.user.role !== UserRole.ADMIN){
+        throw new AppError(403,"Only admin can create category")
+    }
+
     const result = await categoryService.createCategory(req.body);
 
     return res.status(200).json({

@@ -1,3 +1,4 @@
+import { AppError } from "../../errors/AppError";
 import { Category } from "../../generated/prisma/client";
 import slug from "../../helpers/slug";
 import { prisma } from "../../lib/prisma";
@@ -5,7 +6,7 @@ import { prisma } from "../../lib/prisma";
 const createCategory = async (data : Omit<Category , 'id' | "createdAt" | "updatedAt" | "meals" | "slug">) =>{
 
     if(!data.name){
-        throw new Error("Category name is required")
+        throw new AppError(400 ,"Category name is required")
     }
 
     const slugValue = slug(data.name)
@@ -20,7 +21,7 @@ const createCategory = async (data : Omit<Category , 'id' | "createdAt" | "updat
     })
 
     if(existingCategory){
-        throw new Error("Category already exists")
+        throw new AppError(409 ,"Category already exists")
     }
 
     const result = await prisma.category.create({
@@ -47,7 +48,7 @@ const getAllCategories = async () => {
 const updateCategories = async (categoryId : string , data : Partial<Category>) =>{
 
     if(!categoryId){
-        throw new Error("Category id is required")
+        throw new AppError(400,"Category id is required")
     }
 
     const updateData : Partial<Category> = {

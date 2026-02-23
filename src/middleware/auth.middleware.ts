@@ -1,7 +1,7 @@
 
 import { NextFunction , Request , Response} from "express"
 import { auth } from "../lib/auth"
-import { success } from "better-auth/*"
+
 
 export enum UserRole{
     customer = "CUSTOMER",
@@ -60,6 +60,8 @@ export const authMiddleware = (...roles : UserRole[]) =>{
                     message : "Forbidden ! You are not authorized to access this resource"
                 })
             }
+
+            next()
             
         } catch (error) {
             next(error)
