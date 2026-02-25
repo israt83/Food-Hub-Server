@@ -1,0 +1,85 @@
+import { AppError } from "../../errors/AppError";
+import { OrderStatus } from "../../generated/prisma/enums";
+import { prisma } from "../../lib/prisma";
+import { CreateOrderPayload } from "../../types/order.type";
+
+const createOrder = async (userId: string, payload: CreateOrderPayload) => {
+	if (!payload.items || payload.items.length === 0) {
+		throw new AppError(400, "Order must contain at least one item");
+	}
+
+	const user = await prisma.user.findUnique({
+		where: { id: userId },
+	});
+
+	if (!user) {
+		throw new AppError(401, "User not found");
+	}
+
+	const meals = await prisma.meal.findMany({
+		where: {
+			id: { in: payload.items.map(i => i.mealId) },
+			isAvailable: true,
+			provider: {
+				isOpen: true,
+				user: { status: "ACTIVE" },
+			},
+		},
+		include: {
+			provider: true,
+		},
+	});
+
+	const providerId = meals[0]!.providerId;
+	const uniqueProviders = new Set(meals.map(m => m.providerId));
+
+	if (uniqueProviders.size > 1) {
+		throw new AppError(400, "Meals must be from a single provider");
+	}
+
+	const orderItemsData = payload.items.map(item => {
+		const meal = meals.find(m => m.id === item.mealId)!;
+		return {
+			mealId: meal.id,
+			mealName: meal.name,
+			mealPrice: meal.price,
+			quantity: item.quantity,
+		};
+	});
+
+	const totalPrice = orderItemsData.reduce((sum, item) => sum + item.mealPrice * item.quantity, 0);
+
+	const order = await prisma.order.create({
+		data: {
+			customerId: user.id,
+			providerId,
+			deliveryAddress: payload.deliveryAddress,
+			status: OrderStatus.PLACED,
+			totalPrice,
+			items: {
+				create: orderItemsData,
+			},
+		},
+		include: {
+			items: true,
+		},
+	});
+
+	// Send email safely
+	// if (user.email) {
+	// 	await transporter.sendMail(
+	// 		orderConfirmationEmail({
+	// 			email: user.email,
+	// 			orderId: order.id,
+	// 			totalPrice: order.totalPrice,
+	// 			address: order.deliveryAddress,
+	// 		}),
+	// 	);
+	// }
+
+	return order;
+};
+
+ export const orderService ={
+     	createOrder,
+ }

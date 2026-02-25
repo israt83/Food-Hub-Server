@@ -8,6 +8,8 @@ import globalErrorHandler from "./middleware/globalErrorHandle";
 import { userRoute } from "./modules/user/user.routes";
 import { providerRoute } from "./modules/provider/provider.routes";
 import { mealRoute } from "./modules/meal/meal.routes";
+import { reviewRoute } from "./modules/review/review.routes";
+import { orderRoute } from "./modules/order/order.routes";
 
 
 const app = express();
@@ -23,6 +25,8 @@ app.use('/api',categoryRoutes)
 app.use('/api' , userRoute)
 app.use('/api' , providerRoute)
 app.use('/api', mealRoute)
+app.use('/api' , orderRoute)
+app.use('/api' , reviewRoute)
 
 
 app.use(globalErrorHandler)
