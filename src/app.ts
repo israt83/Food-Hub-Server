@@ -7,6 +7,7 @@ import { notFound } from "./middleware/notFound";
 import globalErrorHandler from "./middleware/globalErrorHandle";
 import { userRoute } from "./modules/user/user.routes";
 import { providerRoute } from "./modules/provider/provider.routes";
+import { mealRoute } from "./modules/meal/meal.routes";
 
 
 const app = express();
@@ -21,6 +22,7 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use('/api',categoryRoutes)
 app.use('/api' , userRoute)
 app.use('/api' , providerRoute)
+app.use('/api', mealRoute)
 
 
 app.use(globalErrorHandler)
