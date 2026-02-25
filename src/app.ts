@@ -6,6 +6,7 @@ import { categoryRoutes } from "./modules/category/category.routes";
 import { notFound } from "./middleware/notFound";
 import globalErrorHandler from "./middleware/globalErrorHandle";
 import { userRoute } from "./modules/user/user.routes";
+import { providerRoute } from "./modules/provider/provider.routes";
 
 
 const app = express();
@@ -19,6 +20,7 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use('/api',categoryRoutes)
 app.use('/api' , userRoute)
+app.use('/api' , providerRoute)
 
 
 app.use(globalErrorHandler)
