@@ -1,87 +1,71 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { AppError } from "../../errors/AppError";
 import { userService } from "./user.service";
 import { UserRole } from "../../middleware/auth.middleware";
 
-const getMyProfile = (req: Request, res: Response) => {
+const getMyProfile = async (req: Request, res: Response , next : NextFunction) => {
   try {
     if (!req.user) {
       throw new AppError(401, "Unauthorized access");
     }
-    const result = userService.getMyProfile(req.user.id);
+    const result = await userService.getMyProfile(req.user.id);
     return res.status(200).json({
       success: true,
       message: "User fetched successfully",
       data: result,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    });
+    next(error);
   }
 };
-const UpdateMyProfile = (req: Request, res: Response) => {
+const UpdateMyProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.user) {
       throw new AppError(401, "Unauthorized access");
     }
-    const result = userService.updateMyProfile(req.user.id, req.body);
+    const result = await userService.updateMyProfile(req.user.id, req.body);
     return res.status(200).json({
       success: true,
-      message: "User fetched successfully",
+      message: " Profile updated successfully",
       data: result,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    });
+   next(error);
   }
 };
 
 /*------- Admin Controller -------*/
-const getAllUsers = (req: Request, res: Response) => {
+const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = userService.getAllUsers();
+    const result = await userService.getAllUsers();
     return res.status(200).json({
       success: true,
       message: "User fetched successfully",
       data: result,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    });
+    next(error);
   }
 };
-const UpdateUserStatus = (req: Request, res: Response) => {
+const UpdateUserStatus = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
     const { status } = req.body;
     if (!status || !["ACTIVE", "SUSPENDED"].includes(status)) {
       throw new AppError(400, "Invalid status");
     }
-    const result = userService.updateUserStatus(userId as string, status);
+    const result = await userService.updateUserStatus(userId as string, status);
     return res.status(200).json({
       success: true,
       message: "User status updated successfully",
       data: result,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    });
+    next(error);
   }
 };
 
-const updateUserRoleToProvider =async (req: Request, res: Response) => {
+const updateUserRoleToProvider =async (req: Request, res: Response , next: NextFunction) => {
   try {
     const { userId } = req.params;
     const { role } = req.body;
@@ -94,11 +78,7 @@ const updateUserRoleToProvider =async (req: Request, res: Response) => {
     })
     }
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    });
+    next(error);
   }
 };
 

@@ -5,6 +5,7 @@ import { auth } from "./lib/auth";
 import { categoryRoutes } from "./modules/category/category.routes";
 import { notFound } from "./middleware/notFound";
 import globalErrorHandler from "./middleware/globalErrorHandle";
+import { userRoute } from "./modules/user/user.routes";
 
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(cors({
 app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use('/api',categoryRoutes)
+app.use('/api' , userRoute)
 
 
 app.use(globalErrorHandler)

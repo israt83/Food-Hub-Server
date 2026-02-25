@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { categoryService } from "./category.service";
 import { AppError } from "../../errors/AppError";
 import { UserRole } from "../../generated/prisma/enums";
 
-const createCategory = async (req: Request, res: Response) => {
+const createCategory = async (req: Request, res: Response , next:NextFunction) => {
   try {
     
     if(!req.user){
@@ -22,16 +22,11 @@ const createCategory = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    });
+    next(error);
   }
 };
 
-const getAllCategories  = async (req: Request, res: Response) => {
+const getAllCategories  = async (req: Request, res: Response , next:NextFunction) => {
     try {
         const result = await categoryService.getAllCategories()
         return res.status(200).json({
@@ -40,15 +35,11 @@ const getAllCategories  = async (req: Request, res: Response) => {
             data : result
         })
     } catch (error) {
-        return res.status(500).json({
-            success : false,
-            message : "Something went wrong",
-            error
-        })
+       next(error)
     }
 }
 
-const updateCategories  = async (req: Request, res: Response) => {
+const updateCategories  = async (req: Request, res: Response ,next:NextFunction) => {
     try {
         const {categoryId} = req.params
         const result = await categoryService.updateCategories(categoryId as string, req.body)
@@ -59,15 +50,11 @@ const updateCategories  = async (req: Request, res: Response) => {
         })
         
     } catch (error) {
-        return res.status(500).json({
-            success : false,
-            message : "Something went wrong",
-            error
-        })
+        next(error)
     }
 }
 
-const deleteCategories  = async (req: Request, res: Response) => {
+const deleteCategories  = async (req: Request, res: Response , next:NextFunction) => {
     try {
         const {categoryId} = req.params
         const result = await categoryService.deleteCategories(categoryId as string)
@@ -77,11 +64,8 @@ const deleteCategories  = async (req: Request, res: Response) => {
             data : result
         })
     } catch (error) {
-        return res.status(500).json({
-            success : false,
-            message : "Something went wrong",
-            error
-        })
+        next(error)
+           
     }
 
 }
