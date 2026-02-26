@@ -80,6 +80,90 @@ const createOrder = async (userId: string, payload: CreateOrderPayload) => {
 	return order;
 };
 
+const getMyOrders = async (userId: string) => {
+	if (!userId) {
+		throw new AppError(401, "Unauthorized access");
+	}
+
+	return prisma.order.findMany({
+		where: {
+			customerId: userId,
+		},
+		include: {
+			items: {
+				include: {
+					meal: true,
+				},
+			},
+		},
+		orderBy: {
+			createdAt: "desc",
+		},
+	});
+};
+
+const getSingleOrder = async (userId: string, orderId: string) => {
+	if (!orderId) {
+		throw new AppError(400, "Order ID is required");
+	}
+
+	const order = await prisma.order.findFirst({
+		where: {
+			id: orderId,
+			customerId: userId,
+		},
+		include: {
+			items: {
+				include: {
+					meal: true,
+				},
+			},
+			provider: true,
+		},
+	});
+
+	if (!order) {
+		throw new AppError(404, "Order not found");
+	}
+
+	return order;
+};
+
+const cancelOrder = async (customerId: string, orderId: string) => {
+	if (!orderId) {
+		throw new AppError(400, "Order ID is required");
+	}
+
+	const order = await prisma.order.findFirst({
+		where: {
+			id: orderId,
+			customerId,
+		},
+	});
+
+	if (!order) {
+		throw new AppError(404, "Order not found");
+	}
+
+	if (order.status !== OrderStatus.PLACED) {
+		throw new AppError(400, "Order cannot be cancelled at this stage");
+	}
+
+	const cancelledOrder = await prisma.order.update({
+		where: {
+			id: orderId,
+		},
+		data: {
+			status: OrderStatus.CANCELLED,
+		},
+	});
+
+	return cancelledOrder;
+};
+
  export const orderService ={
-     	createOrder,
+    createOrder,
+    getMyOrders,
+    getSingleOrder,
+    cancelOrder
  }
