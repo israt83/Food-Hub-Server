@@ -14,4 +14,17 @@ router.patch(
 	orderController.cancelOrder,
 );
 
+// Admin  routes
+router.get("/admin/orders", authMiddleware(UserRole.admin), orderController.getAllOrdersForAdmin);
+router.patch(
+	"/admin/orders/:orderId/status",
+	authMiddleware(UserRole.admin),
+	orderController.updateOrderStatus,
+);
+router.patch(
+	"/admin/orders/:orderId/cancel",
+	authMiddleware(UserRole.admin),
+	orderController.cancelOrderByAdmin,
+);
+
 export const orderRoute = router;

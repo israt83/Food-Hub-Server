@@ -161,9 +161,95 @@ const cancelOrder = async (customerId: string, orderId: string) => {
 	return cancelledOrder;
 };
 
+// Admin Service
+
+// Admin
+const getAllOrdersForAdmin = async () => {
+	return prisma.order.findMany({
+		include: {
+			customer: {
+				select: {
+					id: true,
+					name: true,
+					email: true,
+				},
+			},
+			provider: {
+				select: {
+					id: true,
+					restaurantName: true,
+				},
+			},
+			items: true,
+		},
+		orderBy: {
+			createdAt: "desc",
+		},
+	});
+};
+
+const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+	if (!orderId) {
+		throw new AppError(400, "Provider ID and Order ID are required");
+	}
+
+	const order = await prisma.order.findFirst({
+		where: {
+			id: orderId,
+		},
+	});
+
+	if (!order) {
+		throw new AppError(404, "Order not found or unauthorized");
+	}
+
+	if (order.status === newStatus) {
+		throw new AppError(400, "Order status already updated");
+	}
+
+	const validTransitions: Record<OrderStatus, OrderStatus[]> = {
+		PLACED: [OrderStatus.PREPARING],
+		PREPARING: [OrderStatus.READY],
+		READY: [OrderStatus.DELIVERED],
+		DELIVERED: [],
+		CANCELLED: [],
+	};
+
+	if (!validTransitions[order.status].includes(newStatus)) {
+		throw new AppError(400, "Invalid order status transition");
+	}
+
+	return prisma.order.update({
+		where: { id: orderId },
+		data: { status: newStatus },
+	});
+};
+
+const cancelOrderByAdmin = async (orderId: string) => {
+	if (!orderId) {
+		throw new AppError(400, "Order ID is required");
+	}
+
+	const cancelledOrder = await prisma.order.update({
+		where: {
+			id: orderId,
+		},
+		data: {
+			status: OrderStatus.CANCELLED,
+		},
+	});
+
+	return cancelledOrder;
+};
+
+
+
  export const orderService ={
     createOrder,
     getMyOrders,
     getSingleOrder,
-    cancelOrder
+    cancelOrder,
+    getAllOrdersForAdmin,
+    updateOrderStatus,
+    cancelOrderByAdmin
  }

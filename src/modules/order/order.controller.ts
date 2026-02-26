@@ -93,10 +93,73 @@ const  cancelOrder = async (req: Request, res: Response ,next : NextFunction) =>
     }
 }
 
+// Admin controller 
+const  getAllOrdersForAdmin = async (req: Request, res: Response ,next : NextFunction) => {
+    try {
+    const result = await orderService.getAllOrdersForAdmin();   
+	res.status(201).json({
+		success: true,
+        message: "All orders fetched successfully",
+		data: result,
+	});
+    } catch (error) {
+        next(error);
+    }
+}
+
+const  updateOrderStatus = async (req: Request, res: Response ,next : NextFunction) => {
+    try {
+     if(!req.user){
+        throw new AppError(401, "Unauthorized access");
+     }   
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    if(!orderId || !status){
+        throw new AppError(400, "Order ID and status are required");
+    }
+
+    const result = await orderService.updateOrderStatus(orderId as string, status);   
+	res.status(201).json({
+		success: true,
+        message: "Order status updated successfully",
+		data: result,
+	});
+    } catch (error) {
+        next(error);
+    }
+}
+
+const  cancelOrderByAdmin = async (req: Request, res: Response ,next : NextFunction) => {
+    try {
+     if(!req.user){
+        throw new AppError(401, "Unauthorized access");
+     }   
+    const { orderId } = req.params;
+    
+
+    if(!orderId){
+        throw new AppError(400, "Order ID is required");
+    }
+
+    const result = await orderService.cancelOrderByAdmin(orderId as string);   
+	res.status(201).json({
+		success: true,
+        message: "Order cancelled successfully",
+		data: result,
+	});
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const orderController ={
     createOrder,
     getMyOrders,
     getSingleOrder,
     cancelOrder,
+    getAllOrdersForAdmin,
+    updateOrderStatus,
+    cancelOrderByAdmin
 }
 
