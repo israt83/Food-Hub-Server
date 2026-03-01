@@ -1,6 +1,6 @@
+import { Meal } from "../../../prisma/generated/prisma/client";
+import { MealWhereInput } from "../../../prisma/generated/prisma/models";
 import { AppError } from "../../errors/AppError";
-import { Meal } from "../../generated/prisma/client";
-import { MealWhereInput } from "../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 import { GetMealsParams } from "../../types/meal.type";
 

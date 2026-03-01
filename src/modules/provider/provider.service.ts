@@ -1,5 +1,5 @@
 import { AppError } from "../../errors/AppError";
-import { Meal, OrderStatus, ProviderProfile } from "../../generated/prisma/client";
+import { Meal, OrderStatus, ProviderProfile } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
 // auto create provider when user created with role provider

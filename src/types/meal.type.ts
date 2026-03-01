@@ -1,4 +1,6 @@
-import { DietaryType } from "../generated/prisma/enums";
+// import { DietaryType } from "../generated/prisma/enums";
+
+import { DietaryType } from "../../prisma/generated/prisma/enums";
 
 
 export type GetMealsParams = {

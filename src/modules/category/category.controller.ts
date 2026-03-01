@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { categoryService } from "./category.service";
 import { AppError } from "../../errors/AppError";
-import { UserRole } from "../../generated/prisma/enums";
+import { UserRole } from "../../../prisma/generated/prisma/enums";
+
 
 const createCategory = async (req: Request, res: Response , next:NextFunction) => {
   try {

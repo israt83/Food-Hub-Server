@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ProviderService } from "./provider.service";
 import { AppError } from "../../errors/AppError";
-import { UserRole } from "../../generated/prisma/enums";
+import { UserRole } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 const createProvider = async (req : Request, res: Response ,next: NextFunction) => {

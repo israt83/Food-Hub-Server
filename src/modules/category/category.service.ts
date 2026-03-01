@@ -1,5 +1,6 @@
+import { Category } from "../../../prisma/generated/prisma/client";
 import { AppError } from "../../errors/AppError";
-import { Category } from "../../generated/prisma/client";
+
 import slug from "../../helpers/slug";
 import { prisma } from "../../lib/prisma";
 

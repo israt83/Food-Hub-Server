@@ -4,7 +4,7 @@
 /*----Customer / Provider----*/
 
 import { AppError } from "../../errors/AppError"
-import {  UserRole, UserStatus } from "../../generated/prisma/client"
+import {  UserRole, UserStatus } from "../../../generated/prisma/client"
 import { prisma } from "../../lib/prisma"
 
 const getMyProfile = async (userId: string) => {
@@ -99,26 +99,65 @@ const updateUserStatus = async (userId: string, status: UserStatus) => {
     
 }
 
-const updateUserRoleToProvider = async (userId : string ,role : UserRole) =>{
-    const user = await prisma.user.findUnique({
-        where:{id : userId}
-    })
-    if(!user){
-        throw new AppError(404,"User not found")
+// const updateUserRoleToProvider = async (userId : string ,role : UserRole) =>{
+//     const user = await prisma.user.findUnique({
+//         where:{id : userId}
+//     })
+//     if(!user){
+//         throw new AppError(404,"User not found")
+//     }
+
+//     if(role === UserRole.PROVIDER){
+//         return await prisma.user.update({
+//             where: {
+//                 id: userId
+//             },
+//             data: {
+//                 role : UserRole.PROVIDER
+//                 }
+//         })
+
+//     }
+// }
+const updateUserRoleToProvider = async (userId: string, role: UserRole) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId }
+  });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  return await prisma.$transaction(async (tx) => {
+
+    // 1️⃣ Update user role
+    const updatedUser = await tx.user.update({
+      where: { id: userId },
+      data: { role: UserRole.PROVIDER }
+    });
+
+    // 2️⃣ Check if provider profile exists
+    const existingProvider = await tx.providerProfile.findFirst({
+      where: { userId }
+    });
+
+    // 3️⃣ If not exists → create
+    if (!existingProvider) {
+      await tx.providerProfile.create({
+        data: {
+          userId,
+          isOpen: true,
+          restaurantName: "",
+          description: "",
+          address: "",
+          phone: "",
+        }
+      });
     }
 
-    if(role === UserRole.PROVIDER){
-        return await prisma.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                role : UserRole.PROVIDER
-                }
-        })
-
-    }
-}
+    return updatedUser;
+  });
+};
 
 
 export const userService = {

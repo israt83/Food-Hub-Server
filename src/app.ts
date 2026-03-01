@@ -28,6 +28,9 @@ app.use('/api', mealRoute)
 app.use('/api' , orderRoute)
 app.use('/api' , reviewRoute)
 
+app.get("/", (req, res) => {
+	res.send("Hello, World!");
+});
 
 app.use(globalErrorHandler)
 app.use(notFound)

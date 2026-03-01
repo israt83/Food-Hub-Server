@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../../errors/AppError";
-import { UserRole } from "../../generated/prisma/enums";
+
 import { orderService } from "./order.service";
+import { UserRole } from "../../../prisma/generated/prisma/enums";
 
 const createOrder = async (req: Request, res: Response ,next : NextFunction) => {
     try {

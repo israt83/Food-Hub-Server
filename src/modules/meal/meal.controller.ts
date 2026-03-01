@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
-import { DietaryType, UserRole } from "../../generated/prisma/enums";
+
 import { mealService } from "./meal.service";
 import paginationSortingHelper from "../../helpers/paginationSortingHelper";
+import { DietaryType, UserRole } from "../../../prisma/generated/prisma/enums";
 
 const createMeal = async (req: Request, res: Response , next : NextFunction) => {
     try {

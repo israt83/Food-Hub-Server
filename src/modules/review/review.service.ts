@@ -1,5 +1,5 @@
 import { AppError } from "../../errors/AppError";
-import { OrderStatus } from "../../generated/prisma/enums";
+import { OrderStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { CreateReviewPayload } from "../../types/review.type";
 

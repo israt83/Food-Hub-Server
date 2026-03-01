@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../../errors/AppError";
-import { UserRole } from "../../generated/prisma/enums";
+import { UserRole } from "../../../generated/prisma/enums";
 import { reviewService } from "./review.service";
 
 const createReview = async (req : Request, res:Response ,next : NextFunction) =>{

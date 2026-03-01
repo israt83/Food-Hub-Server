@@ -1,5 +1,6 @@
+import { OrderStatus } from "../../../prisma/generated/prisma/enums";
 import { AppError } from "../../errors/AppError";
-import { OrderStatus } from "../../generated/prisma/enums";
+
 import { prisma } from "../../lib/prisma";
 import { CreateOrderPayload } from "../../types/order.type";
 
