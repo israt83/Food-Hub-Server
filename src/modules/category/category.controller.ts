@@ -55,6 +55,7 @@ const updateCategories  = async (req: Request, res: Response ,next:NextFunction)
     }
 }
 
+
 const deleteCategories  = async (req: Request, res: Response , next:NextFunction) => {
     try {
         const {categoryId} = req.params

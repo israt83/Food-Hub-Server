@@ -1,7 +1,8 @@
 model Category {
-    id   String @id @default(uuid())
-    name String @unique
-    slug String @unique
+    id       String  @id @default(uuid())
+    name     String  @unique
+    slug     String  @unique
+    imageUrl String?
 
     meals Meal[]
 

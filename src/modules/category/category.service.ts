@@ -70,6 +70,9 @@ const updateCategories = async (categoryId : string , data : Partial<Category>) 
 
 }
 
+
+
+
 const deleteCategories = async (categoryId : string) =>{
     return await prisma.category.delete({
         where : {
