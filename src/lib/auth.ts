@@ -17,14 +17,44 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-
+  
+	baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins: [process.env.FROTEND_URL!],
+
+  session: {
+		cookieCache: {
+			enabled: true,
+			maxAge: 5 * 60, // 5 minutes
+		},
+	},
+
+  advanced: {
+		cookiePrefix: "better-auth",
+		useSecureCookies: process.env.NODE_ENV === "production",
+		crossDomain: {
+			enabled: true,
+		},
+		// Required for cross-domain OAuth: cookies must be SameSite=None so they are
+		// stored via cross-origin fetch (sign-in initiation) AND sent back when Google
+		// redirects to the backend callback (cross-site top-level navigation).
+		// Better Auth defaults to SameSite=Lax which fails in this split-domain setup.
+		defaultCookieAttributes: {
+			sameSite: "none",
+			secure: true,
+		},
+		disableCSRFCheck: true,
+	},
+
+  account: {
+		skipStateCookieCheck: true,
+	},
 
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
     requireEmailVerification: true,
   },
+ 
   user: {
     additionalFields: {
       role: {
@@ -57,7 +87,7 @@ export const auth = betterAuth({
           text: `
 Hi ${user.name || "there"},
 
-Welcome to FoodHub 🍱
+Welcome to FoodHub 
 
 Thanks for creating your FoodHub account. Please verify your email address by clicking the link below:
 
@@ -69,7 +99,7 @@ If you didn’t create this account, you can safely ignore this email.
 
 — FoodHub Team
 `,
-          html:  `
+          html: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
