@@ -14,47 +14,66 @@ const transporter = nodemailer.createTransport({
 });
 
 export const auth = betterAuth({
+   secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: process.env.BETTER_AUTH_URL,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  
-	baseURL: process.env.BETTER_AUTH_URL,
-  trustedOrigins: [process.env.FROTEND_URL!],
 
-  session: {
-		cookieCache: {
-			enabled: true,
-			maxAge: 5 * 60, // 5 minutes
-		},
-	},
+  // trustedOrigins: [process.env.FRONTEND_URL!],
+  trustedOrigins: async (request) => {
+    const origin = request?.headers.get("origin");
 
-  advanced: {
-		cookiePrefix: "better-auth",
-		useSecureCookies: process.env.NODE_ENV === "production",
-		crossDomain: {
-			enabled: true,
-		},
-		// Required for cross-domain OAuth: cookies must be SameSite=None so they are
-		// stored via cross-origin fetch (sign-in initiation) AND sent back when Google
-		// redirects to the backend callback (cross-site top-level navigation).
-		// Better Auth defaults to SameSite=Lax which fails in this split-domain setup.
-		defaultCookieAttributes: {
-			sameSite: "none",
-			secure: true,
-		},
-		disableCSRFCheck: true,
-	},
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      process.env.BETTER_AUTH_URL,
+      "http://localhost:3000",
+      "http://localhost:4000",
+      "http://localhost:5000",
+      "https://food-hub-web.vercel.app ",
+      "https://food-hub-server-mu.vercel.app ",
+    ].filter(Boolean);
 
-  account: {
-		skipStateCookieCheck: true,
-	},
+    // Check if origin matches allowed origins or Vercel pattern
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/.*\.vercel\.app$/.test(origin)
+    ) {
+      return [origin];
+    }
 
-  emailAndPassword: {
-    enabled: true,
-    autoSignIn: false,
-    requireEmailVerification: true,
+    return [];
   },
- 
+  basePath: "/api/auth",
+  // session: {
+  //   cookieCache: {
+  //     enabled: true,
+  //     maxAge: 5 * 60, // 5 minutes
+  //   },
+  // },
+
+  // advanced: {
+  //   cookiePrefix: "better-auth",
+  //   useSecureCookies: process.env.NODE_ENV === "production",
+  //   crossDomain: {
+  //     enabled: true,
+  //   },
+  //   // Required for cross-domain OAuth: cookies must be SameSite=None so they are
+  //   // stored via cross-origin fetch (sign-in initiation) AND sent back when Google
+  //   // redirects to the backend callback (cross-site top-level navigation).
+  //   // Better Auth defaults to SameSite=Lax which fails in this split-domain setup.
+  //   defaultCookieAttributes: {
+  //     sameSite: "none",
+  //     secure: true,
+  //   },
+  //   disableCSRFCheck: true,
+  // },
+
+  // account: {
+  //   skipStateCookieCheck: true,
+  // },
+
   user: {
     additionalFields: {
       role: {
@@ -74,12 +93,17 @@ export const auth = betterAuth({
     },
   },
 
+  emailAndPassword: {
+    enabled: true,
+    autoSignIn: false,
+    requireEmailVerification: true,
+  },
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url, token }, request) => {
       try {
-        const verificationUrl = `${process.env.FROTEND_URL}/verify-email?token=${token}`;
+        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
         const info = await transporter.sendMail({
           from: '"Food Hub" <foodhubcontact@gmail.com>',
           to: user.email,

@@ -21,3 +21,5 @@ router.delete(
 );
 
 export const categoryRoutes = router;
+
+
